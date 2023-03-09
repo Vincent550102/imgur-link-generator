@@ -1,6 +1,6 @@
 <template>
   <v-card title="圖片網址產生器" class="mx-auto mt-4" subtitle="將您的圖片變為 imgur 的網址" text="您可以選擇用下方區塊上傳或將圖片拖放或貼上到此區塊！"
-    max-width="500" variant="outlined" :loading="loading">
+    max-width="500" variant="outlined" :loading="loading" @paste="pasteImage">
     <v-card-text>
       <v-file-input :disabled="disabled" accept="image/png, image/jpeg, image/bmp" placeholder="Upload your images!"
         prepend-icon="mdi-image" label="Image" density="compact" @change="showFile"></v-file-input>
@@ -10,8 +10,10 @@
       </v-btn>
     </v-card-actions>
   </v-card>
-  <meowCard :url="uploadFinish.url" v-for="uploadFinish in uploadFinishs" v-bind:key="uploadFinish.title">
-  </meowCard>
+  <v-card max-width="400" class="mx-auto" v-if="uploadFinishs.length !== 0">
+    <meowCard :url="uploadFinish.url" v-for="uploadFinish in uploadFinishs" v-bind:key="uploadFinish.title">
+    </meowCard>
+  </v-card>
   <!-- <meowCard /> -->
 </template> 
 <script>
@@ -36,6 +38,17 @@ export default {
     }
   },
   methods: {
+    pasteImage(e) {
+      const paste_file = e.clipboardData.items[0].getAsFile()
+      if (paste_file != null && paste_file.type.startsWith("image")) {
+        this.file = paste_file
+        this.fs.name = this.file.name
+        this.fs.size = Math.floor(this.file.size * 0.001) + 'KB';
+        this.fs.thumbnail = window.URL.createObjectURL(this.file);
+        this.title = this.fs.name;
+        this.submit()
+      }
+    },
     showFile(e) {
       this.file = e.target.files[0];
       this.fs.name = this.file.name;
