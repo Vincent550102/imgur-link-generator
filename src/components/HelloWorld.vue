@@ -1,5 +1,5 @@
 <template>
-  <v-card title="圖片網址產生器" class="mx-auto mt-4" subtitle="將您的圖片變為 imgur 的網址" text="您可以選擇用下方區塊上傳或將圖片拖放或貼上到此區塊！"
+  <v-card title="圖片網址產生器" class="mx-auto mt-4" subtitle="將您的圖片變為 imgur 的網址" text="您可以選擇用下方區塊上傳或將圖片拖放或直接貼上到此區塊！"
     max-width="500" variant="outlined" :loading="loading" @paste="pasteImage">
     <v-card-text>
       <v-file-input :disabled="disabled" accept="image/png, image/jpeg, image/bmp" placeholder="Upload your images!"
