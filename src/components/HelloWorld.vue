@@ -1,9 +1,10 @@
 <template>
 	<v-card title="圖片網址產生器" class="mx-auto mt-4" subtitle="將您的圖片變為 imgur 的網址" text="您可以選擇用下方區塊上傳或將圖片拖放或直接貼上到此區塊！"
-		max-width="500" variant="outlined" :loading="loading" @paste="pasteImage">
+		max-width="500" variant="outlined" :loading="loading" @paste="pasteImage" @drop="dragImage">
 		<v-card-text>
-			<v-file-input :disabled="disabled" accept="image/png, image/jpeg, image/bmp" placeholder="Upload your images!"
-				prepend-icon="mdi-image" label="Image" density="compact" @change="showFile"></v-file-input>
+			<v-file-input :disabled="disabled" v-model="fileInput" accept="image/png, image/jpeg, image/bmp"
+				placeholder="Upload your images!" prepend-icon="mdi-image" label="Image" density="compact"
+				@change="showFile"></v-file-input>
 		</v-card-text>
 		<v-card-actions class="float-right">
 			<v-btn @click="submit"><v-icon icon="mdi-check"></v-icon>
@@ -38,6 +39,9 @@ export default {
 		}
 	},
 	methods: {
+		dragImage(e) {
+			console.log(e)
+		},
 		pasteImage(e) {
 			const paste_file = e.clipboardData.items[0].getAsFile()
 			if (paste_file != null && paste_file.type.startsWith("image")) {
@@ -59,6 +63,8 @@ export default {
 		},
 		submit() {
 			console.log(this.title);
+			if (this.file == null) return;
+			//this.$refs.fileupload.value = null;
 			const token = "35ac59e22bb084643ec26d0d179365f7ad9e2c5d";
 
 			let form = new FormData();
@@ -84,6 +90,7 @@ export default {
 					})
 					this.loading = false
 					this.disabled = false
+					this.fileInput = null
 				});
 		}
 	},
