@@ -1,10 +1,14 @@
 <template>
 	<v-card title="圖片網址產生器" class="mx-auto mt-4" subtitle="將您的圖片變為 imgur 的網址" text="您可以選擇用下方區塊上傳或將圖片拖放或直接貼上到此區塊！"
-		max-width="500" variant="outlined" :loading="loading" @paste="pasteImage" @drop="dragImage">
-		<v-card-text>
-			<v-file-input :disabled="disabled" v-model="fileInput" accept="image/png, image/jpeg, image/bmp"
-				placeholder="Upload your images!" prepend-icon="mdi-image" label="Image" density="compact"
-				@change="showFile"></v-file-input>
+		max-width="500" variant="outlined" :loading="loading" @paste="pasteImage">
+		<v-card-text id="dropmom">
+			<!-- <v-file-input :disabled="disabled" v-model="fileInput" accept="image/png, image/jpeg, image/bmp" -->
+			<!-- 	placeholder="Upload your images!" prepend-icon="mdi-image" label="Image" density="compact" -->
+			<!-- 	@change="showFile"></v-file-input> -->
+			<!-- <DropZone :acceptedFiles="['image']" v-model="fileInput" :uploadOnDrop="true" :maxFiles="1" @addedFile="showFile" /> -->
+			<!-- <form action="/file-upload" id="form1" class="dropzone" @addedFile="dropImage"></form> -->
+			<!-- <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone> -->
+			<form action="/target" class="dropzone" id="myGreatDropzone"></form>
 		</v-card-text>
 		<v-card-actions class="float-right">
 			<v-btn @click="submit"><v-icon icon="mdi-check"></v-icon>
@@ -19,57 +23,66 @@
 </template> 
 <script>
 import meowCard from './myCard.vue'
+var default_file = null, default_fs_name = '', default_fs_thumbnail = null, default_fs_size = null, default_title = ''
+// TODO
+// 1. 新增 dropzone 上傳完成後自動送出的功能
+// 2. 修好送出後將 dropzone 清空的功能
+Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+	paramName: "file", // The name that will be used to transfer the file
+	maxFilesize: 2, // MB
+	acceptedFiles: "image/*",
+	maxFiles: 1,
+	accept: function (file) {
+		default_file = file
+		default_fs_name = default_file.name
+		default_fs_size = Math.floor(default_file.size * 0.001) + 'KB';
+		default_fs_thumbnail = window.URL.createObjectURL(default_file);
+		default_title = default_file.name;
+	}
+};
+
+
 export default {
 	components: {
-		meowCard
+		meowCard,
 	},
 	data() {
 		return {
-			file: null,
-			fs: {
-				name: '',
-				thumbnail: null,
-				size: null
-			},
-			title: '',
 			des: '',
 			loading: false,
 			disabled: false,
-			uploadFinishs: []
+			uploadFinishs: [],
+			fileInput: null,
+
 		}
 	},
 	methods: {
-		dragImage(e) {
-			console.log(e)
-		},
 		pasteImage(e) {
 			const paste_file = e.clipboardData.items[0].getAsFile()
 			if (paste_file != null && paste_file.type.startsWith("image")) {
-				this.file = paste_file
-				this.fs.name = this.file.name
-				this.fs.size = Math.floor(this.file.size * 0.001) + 'KB';
-				this.fs.thumbnail = window.URL.createObjectURL(this.file);
-				this.title = this.fs.name;
+				default_file = paste_file
+				default_fs_name = default_file.name
+				default_fs_size = Math.floor(default_file.size * 0.001) + 'KB';
+				default_fs_thumbnail = window.URL.createObjectURL(default_file);
+				default_title = default_fs_name;
 				this.submit()
 			}
 		},
 		showFile(e) {
-			this.file = e.target.files[0];
-			this.fs.name = this.file.name;
-			console.log(this.fs.name)
-			this.fs.size = Math.floor(this.file.size * 0.001) + 'KB';
-			this.fs.thumbnail = window.URL.createObjectURL(this.file);
-			this.title = this.fs.name;
+			default_file = e.file;
+			default_fs_name = default_file.name;
+			default_fs_size = Math.floor(default_file.size * 0.001) + 'KB';
+			default_fs_thumbnail = window.URL.createObjectURL(default_file);
+			default_title = default_fs_name;
 		},
 		submit() {
-			console.log(this.title);
-			if (this.file == null) return;
+			if (default_file == null) return;
 			//this.$refs.fileupload.value = null;
 			const token = "35ac59e22bb084643ec26d0d179365f7ad9e2c5d";
 
 			let form = new FormData();
-			form.append('image', this.file);
-			//form.append('title', this.title);
+			form.append('image', default_file);
+			//form.append('title', default_title);
 			//form.append('description', this.des);
 
 			this.loading = true;
@@ -85,14 +98,14 @@ export default {
 				.then(res => {
 					console.log(res.data.link)
 					this.uploadFinishs.unshift({
-						title: this.title,
+						title: default_title,
 						url: res.data.link
 					})
+
 					this.loading = false
 					this.disabled = false
-					this.fileInput = null
 				});
-		}
+		},
 	},
 
 }
