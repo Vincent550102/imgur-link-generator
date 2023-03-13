@@ -38,6 +38,7 @@ Dropzone.options.myGreatDropzone = { // camelized version of the `id`
 		default_file = file
 		default_fs_name = default_file.name
 		default_title = default_file.name;
+		this.submit()
 	}
 };
 
