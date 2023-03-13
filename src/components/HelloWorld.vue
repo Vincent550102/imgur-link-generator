@@ -13,7 +13,7 @@
     <v-card-text id="dropmom">
       <div
         class="drop-container"
-        :class="{   droping }"
+        :class="{ droping }"
         @dragover="droping = true"
         @dragleave="droping = false"
         @dragend="droping = false"
