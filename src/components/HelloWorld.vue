@@ -8,7 +8,7 @@
 			<!-- <DropZone :acceptedFiles="['image']" v-model="fileInput" :uploadOnDrop="true" :maxFiles="1" @addedFile="showFile" /> -->
 			<!-- <form action="/file-upload" id="form1" class="dropzone" @addedFile="dropImage"></form> -->
 			<!-- <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone> -->
-			<form action="/target" class="dropzone" id="myGreatDropzone"></form>
+			<form action="/" method="get" class="dropzone" id="myGreatDropzone"></form>
 		</v-card-text>
 		<v-card-actions class="float-right">
 			<v-btn @click="submit"><v-icon icon="mdi-check"></v-icon>
@@ -23,15 +23,16 @@
 </template> 
 <script>
 import meowCard from './myCard.vue'
-import Dropzone from "dropzone";
 var default_file = null, default_fs_name = '', default_title = ''
 // TODO
 // 1. 新增 dropzone 上傳完成後自動送出的功能
 // 2. 修好送出後將 dropzone 清空的功能
+// eslint-disable-next-line
 Dropzone.options.myGreatDropzone = { // camelized version of the `id`
 	paramName: "file", // The name that will be used to transfer the file
 	maxFilesize: 2, // MB
 	acceptedFiles: "image/*",
+	method: "get",
 	maxFiles: 1,
 	accept: function (file) {
 		default_file = file
