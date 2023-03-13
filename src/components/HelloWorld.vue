@@ -23,7 +23,8 @@
 </template> 
 <script>
 import meowCard from './myCard.vue'
-var default_file = null, default_fs_name = '', default_fs_thumbnail = null, default_fs_size = null, default_title = ''
+import Dropzone from "dropzone";
+var default_file = null, default_fs_name = '', default_title = ''
 // TODO
 // 1. 新增 dropzone 上傳完成後自動送出的功能
 // 2. 修好送出後將 dropzone 清空的功能
@@ -35,8 +36,6 @@ Dropzone.options.myGreatDropzone = { // camelized version of the `id`
 	accept: function (file) {
 		default_file = file
 		default_fs_name = default_file.name
-		default_fs_size = Math.floor(default_file.size * 0.001) + 'KB';
-		default_fs_thumbnail = window.URL.createObjectURL(default_file);
 		default_title = default_file.name;
 	}
 };
@@ -53,7 +52,6 @@ export default {
 			disabled: false,
 			uploadFinishs: [],
 			fileInput: null,
-
 		}
 	},
 	methods: {
@@ -62,8 +60,6 @@ export default {
 			if (paste_file != null && paste_file.type.startsWith("image")) {
 				default_file = paste_file
 				default_fs_name = default_file.name
-				default_fs_size = Math.floor(default_file.size * 0.001) + 'KB';
-				default_fs_thumbnail = window.URL.createObjectURL(default_file);
 				default_title = default_fs_name;
 				this.submit()
 			}
@@ -71,8 +67,6 @@ export default {
 		showFile(e) {
 			default_file = e.file;
 			default_fs_name = default_file.name;
-			default_fs_size = Math.floor(default_file.size * 0.001) + 'KB';
-			default_fs_thumbnail = window.URL.createObjectURL(default_file);
 			default_title = default_fs_name;
 		},
 		submit() {
